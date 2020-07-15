@@ -1,0 +1,174 @@
+<div class="row" *ngIf="!exibir_novo && !exibir_editar">
+    <div class="col-xl-12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-11">
+                    <h5 class="card-title">VALIDADES DE PONTOS</h5>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-primary w-100" (click)="newValidadePontos()"><i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="tbl-col-5">#</th>
+                                    <th class="tbl-col-10">Validade(Meses)</th>
+                                    <th>Pacotes de Benefícios</th>
+                                    <th class="tbl-col-15"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let validade_pontos of validades_pontos; let i = index;">
+                                    <td>{{ i+1 }}</td>
+                                    <td class="text-right">{{ validade_pontos.validade }}</td>
+                                    <td><span class="badge m-r-5 badge-light-primary" *ngFor="let pacote of validade_pontos.pacotes_beneficios">{{ consultarNome(pacotes_beneficios, pacote) }}</span></td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-info" (click)="editValidadePontos(validade_pontos)"><i class="feather icon-edit"></i></button>
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteValidadePontos(validade_pontos)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<div class="row" *ngIf="exibir_novo">
+    <div class="col-xl-4 col-md-6 col-sm12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="card-title">NOVO VALIDADE DE PONTOS</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                      <label>Validade(Meses)</label>
+                      <input type="number" class="form-control" [(ngModel)]="new_validade_pontos.validade" #ctrl="ngModel" required>
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Pacotes de Benefícios</th>
+                                    <th class="tbl-col-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pacote of new_validade_pontos.pacotes_beneficios">
+                                    <td>{{ consultarNome(pacotes_beneficios, pacote) }}</td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deletePacoteBeneficios(new_validade_pontos.pacotes_beneficios, pacote)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!new_validade_pontos.pacotes_beneficios.length">
+                                    <td colspan="2" class="text-center">
+                                        <p>Nenhum pacote de benefícios adicionado.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>
+                                        <select class="form-control form-control-sm" [(ngModel)]="pacote_beneficios_temporario">
+                                            <option [ngValue]="pacote.id" *ngFor="let pacote of pacotes_beneficios">{{ pacote.nome }}</option>
+                                        </select>
+                                    </th>
+                                    <th class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-info" (click)="addPacoteBeneficios(new_validade_pontos.pacotes_beneficios)"><i class="feather icon-save"></i></button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        (click)="retornarAoInicio()">Cancelar</button>
+                    <button type="button" class="btn btn-primary ml-2" (click)="addValidadePontos()" [disabled]="!new_validade_pontos.validade">Cadastrar</button>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<div class="row" *ngIf="exibir_editar">
+    <div class="col-xl-4 col-md-6 col-sm12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="card-title">EDITAR VALIDADE DE PONTOS</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label>Validade(Meses)</label>
+                      <input type="number" class="form-control" [(ngModel)]="edit_validade_pontos.validade" #ctrl="ngModel" required>
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Pacotes de Benefícios</th>
+                                    <th class="tbl-col-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pacote of edit_validade_pontos.pacotes_beneficios">
+                                    <td>{{ consultarNome(pacotes_beneficios, pacote) }}</td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deletePacoteBeneficios(edit_validade_pontos.pacotes_beneficios, pacote)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!edit_validade_pontos.pacotes_beneficios.length">
+                                    <td colspan="2" class="text-center">
+                                        <p>Nenhum pacote de benefícios adicionado.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>
+                                        <select class="form-control form-control-sm" [(ngModel)]="pacote_beneficios_temporario">
+                                            <option [ngValue]="pacote.id" *ngFor="let pacote of pacotes_beneficios">{{ pacote.nome }}</option>
+                                        </select>
+                                    </th>
+                                    <th class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-info" (click)="addPacoteBeneficios(edit_validade_pontos.pacotes_beneficios)"><i class="feather icon-save"></i></button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        (click)="retornarAoInicio()">Cancelar</button>
+                    <button type="button" class="btn btn-primary ml-2" (click)="saveValidadePontos()" [disabled]="!edit_validade_pontos.validade">Salvar</button>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>

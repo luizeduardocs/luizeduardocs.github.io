@@ -1,0 +1,909 @@
+<div class="row" *ngIf="!exibir_novo && !exibir_editar">
+    <div class="col-12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-11">
+                    <h5 class="card-title">CAMPANHAS</h5>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-primary w-100" (click)="newCampanha()"><i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <ngb-tabset>
+                        <ngb-tab title="ATIVAS">
+                            <ng-template ngbTabContent>
+                                <div class="row">
+                                    <div class="col-12 mt-3">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="tbl-col-5">#</th>
+                                                        <th class="tbl-col-30">Nome</th>
+                                                        <th class="tbl-col-10">Inicio</th>
+                                                        <th class="tbl-col-10">Fim</th>
+                                                        <th>Pacotes de Benefícios</th>
+                                                        <th class="tbl-col-15"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let campanha of campanhas_ativas; let i = index;">
+                                                        <td>{{ i+1 }}</td>
+                                                        <td class="text-right">{{ campanha.nome }}</td>
+                                                        <td class="text-right">{{ campanha.data_inicio | date: 'dd/MM/yyyy' }}</td>
+                                                        <td class="text-right">{{ campanha.data_fim | date: 'dd/MM/yyyy' }}</td>
+                                                        <td><span class="badge m-r-5 badge-light-primary" *ngFor="let pacote of campanha.pacotes_beneficios">{{ consultarNome(pacotes_beneficios, pacote) }}</span></td>
+                                                        <td class="text-right">
+                                                            <button type="button" class="btn btn-sm btn-icon btn-warning" (click)="showCampanha(campanha, detalhesCampanha)"><i class="feather icon-eye"></i></button>
+                                                            <button type="button" class="btn btn-sm btn-icon btn-info" (click)="editCampanha(campanha)"><i class="feather icon-edit"></i></button>
+                                                            <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteCampanha(campanha)"><i class="feather icon-trash"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="!campanhas_ativas.length">
+                                                        <td colspan="6" class="text-center">
+                                                            <p>Nenhuma campanha ativa encontrada.</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </ngb-tab>
+                        <ngb-tab title="INATIVAS">
+                            <ng-template ngbTabContent>
+                                <div class="row">
+                                    <div class="col-12 mt-3">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="tbl-col-5">#</th>
+                                                        <th class="tbl-col-30">Nome</th>
+                                                        <th class="tbl-col-10">Inicio</th>
+                                                        <th class="tbl-col-10">Fim</th>
+                                                        <th>Pacotes de Benefícios</th>
+                                                        <th class="tbl-col-15"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let campanha of campanhas_inativas; let i = index;">
+                                                        <td>{{ i+1 }}</td>
+                                                        <td class="text-right">{{ campanha.nome }}</td>
+                                                        <td class="text-right">{{ campanha.data_inicio | date: 'dd/MM/yyyy' }}</td>
+                                                        <td class="text-right">{{ campanha.data_fim | date: 'dd/MM/yyyy' }}</td>
+                                                        <td><span class="badge m-r-5 badge-light-primary" *ngFor="let pacote of campanha.pacotes_beneficios">{{ consultarNome(pacotes_beneficios, pacote) }}</span></td>
+                                                        <td class="text-right">
+                                                            <button type="button" class="btn btn-sm btn-icon btn-warning" (click)="showCampanha(campanha, detalhesCampanha)"><i class="feather icon-eye"></i></button>
+                                                            <button type="button" class="btn btn-sm btn-icon btn-info" (click)="editCampanha(campanha)"><i class="feather icon-edit"></i></button>
+                                                            <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteCampanha(campanha)"><i class="feather icon-trash"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="!campanhas_inativas.length">
+                                                        <td colspan="6" class="text-center">
+                                                            <p>Nenhuma campanha inativa encontrada.</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </ngb-tab>
+                    </ngb-tabset>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<div class="row" *ngIf="exibir_novo">
+    <div class="col-xl-6 col-md-8 col-sm12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="card-title">NOVA CAMPANHA</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-8">
+                    <div class="form-group">
+                      <label>Nome</label>
+                      <input type="text" class="form-control form-control-sm" [(ngModel)]="new_campanha.nome" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4 mt-2">
+                    <div class="form-group">
+                      <label>Data Inicio</label>
+                      <input type="date" class="form-control form-control-sm" [(ngModel)]="new_campanha.data_inicio" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="col-4 mt-2">
+                    <div class="form-group">
+                      <label>Data Fim</label>
+                      <input type="date" class="form-control form-control-sm" [(ngModel)]="new_campanha.data_fim" #ctrl="ngModel">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <h5 class="mt-5">Motor de Pontos</h5>
+                    <hr>
+                    <div class="custom-control custom-radio custom-control-inline" *ngFor="let tipo_motor_pontos of tipos_motores_pontos;">
+                      <input type="radio" name="tipo_motor_pontos" id="tipo_motor_pontos_{{ tipo_motor_pontos.id }}" [value]="tipo_motor_pontos.id" [(ngModel)]="new_campanha.tipo_motor_pontos" class="custom-control-input">
+                      <label class="custom-control-label" for="tipo_motor_pontos_{{ tipo_motor_pontos.id }}">{{ tipo_motor_pontos.nome }}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="new_campanha.tipo_motor_pontos == 1">
+                <div class="col-12">
+                    <h6 class="mt-5">Pontuação</h6>
+                </div>
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <th>Tipo</th>
+                                <th class="tbl-col-20">Moeda</th>
+                                <th class="tbl-col-30">Pontuação</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Débito</td>
+                                    <td>
+                                        <select class="form-control form-control-sm" [(ngModel)]="new_campanha.pontuacao_debito.moeda" #ctrl="ngModel">
+                                            <option [value]="moeda.id" *ngFor="let moeda of moedas">{{ moeda.sigla }}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+                                        [(ngModel)]="new_campanha.pontuacao_debito.pontuacao" #ctrl="ngModel">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Crédito</td>
+                                    <td>
+                                        <select class="form-control form-control-sm" [(ngModel)]="new_campanha.pontuacao_credito.moeda" #ctrl="ngModel">
+                                            <option [value]="moeda.id" *ngFor="let moeda of moedas">{{ moeda.sigla }}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+                                        [(ngModel)]="new_campanha.pontuacao_credito.pontuacao" #ctrl="ngModel">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="new_campanha.tipo_motor_pontos == 2">
+                <div class="col-12">
+                    <h6 class="mt-5">Cashback Débito</h6>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                      <label>Porcentagem</label>
+                      <input currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="new_campanha.porcentagem_cashback_debito" #ctrl="ngModel" required>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <hr>
+                    <h6 class="mt-3">Cashback Crédito</h6>
+                </div>
+                <div class="col-4 mt-2"><p>Cashback por faixa de valor</p></div>
+                <div class="col-8 mt-2">
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_range_cashback_credito" id="possui_range_cashback_credito_0" (change)="mudarTipoCashbackCredito(new_campanha)"
+                      [value]="false" [(ngModel)]="new_campanha.possui_range_cashback_credito" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_range_cashback_credito_0">Não</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_range_cashback_credito" id="possui_range_cashback_credito_1" (change)="mudarTipoCashbackCredito(new_campanha)"
+                      [value]="true" [(ngModel)]="new_campanha.possui_range_cashback_credito" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_range_cashback_credito_1">Sim</label>
+                    </div>
+                </div>
+                <div class="col-4 mt-2" *ngIf="!new_campanha.possui_range_cashback_credito">
+                    <div class="form-group">
+                      <label>Porcentagem</label>
+                      <input currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="new_campanha.porcentagem_cashback_credito[0].porcentagem" #ctrl="ngModel" required>
+                    </div>
+                </div>
+                <div class="col-12 mt-2" *ngIf="new_campanha.possui_range_cashback_credito">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="tbl-col-30">Valor Mínimo</th>
+                                    <th class="tbl-col-30">Valor Máximo</th>
+                                    <th class="tbl-col-30">Porcentagem Cashback</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let range_cashback of new_campanha.porcentagem_cashback_credito">
+                                    <td class="text-right">{{ range_cashback.valor_minimo | currency:'BRL' }}</td>
+                                    <td class="text-right">{{ range_cashback.valor_maximo | currency:'BRL' }}</td>
+                                    <td class="text-right">{{ range_cashback.porcentagem }}%</td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteRangeCashback(new_campanha.porcentagem_cashback_credito, range_cashback)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!new_campanha.porcentagem_cashback_credito.length">
+                                    <td colspan="4" class="text-center">
+                                        <p>Nenhuma faixa de valor adicionada.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th><input class="form-control form-control-sm" currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                                        [(ngModel)]="range_cashback_temporario.valor_minimo" #ctrl="ngModel"></th>
+                                    <th><input class="form-control form-control-sm" currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                                        [(ngModel)]="range_cashback_temporario.valor_maximo" #ctrl="ngModel"></th>
+                                    <th><input type="text" class="form-control form-control-sm" currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }"
+                                         [(ngModel)]="range_cashback_temporario.porcentagem" #ctrl="ngModel"></th>
+                                    <th class="text-right">
+                                        <button class="btn btn-sm btn-icon btn-info" currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }"
+                                        (click)="addRangeCashback(new_campanha.porcentagem_cashback_credito)"><i class="feather icon-save"></i></button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <h5 class="mt-5">Meta de Spending</h5>
+                    <hr>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_meta_spending" id="possui_meta_spending_0"
+                      [value]="false" [(ngModel)]="new_campanha.possui_meta_spending" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_meta_spending_0">Não</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_meta_spending" id="possui_meta_spending_1"
+                      [value]="true" [(ngModel)]="new_campanha.possui_meta_spending" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_meta_spending_1">Sim</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="new_campanha.possui_meta_spending">
+                <div class="col-4">
+                    <div class="form-group mt-3">
+                      <label>Valor Meta Spending</label>
+                      <input currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="new_campanha.valor_meta_spendig" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="new_campanha.possui_meta_spending">
+                <div class="col-4">
+                    <div class="form-group">
+                      <label>Pontuação Meta Spending</label>
+                      <input currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="new_campanha.pontuacao_meta_spending" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <h5 class="mt-5">Bônus de Spending</h5>
+                    <hr>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_bonus_spending" id="possui_bonus_spending_0"
+                      [value]="false" [(ngModel)]="new_campanha.possui_bonus_spending" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_bonus_spending_0">Não</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_bonus_spending" id="possui_bonus_spending_1"
+                      [value]="true" [(ngModel)]="new_campanha.possui_bonus_spending" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_bonus_spending_1">Sim</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="new_campanha.possui_bonus_spending">
+                <div class="col-4">
+                    <div class="form-group">
+                      <label>Valor Bônus Spending</label>
+                      <input currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="new_campanha.valor_bonus_spendig" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="new_campanha.possui_bonus_spending">
+                <div class="col-4">
+                    <div class="form-group">
+                      <label>Pontuação Bônus Spending</label>
+                      <input currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="new_campanha.pontuacao_bonus_spending" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 mt-2">
+                    <hr>
+                    <h5 class="mt-5">Pacotes de Benefícios</h5>
+                    <hr>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th class="tbl-col-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pacote of new_campanha.pacotes_beneficios">
+                                    <td>{{ consultarNome(pacotes_beneficios, pacote) }}</td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deletePacoteBeneficios(new_campanha.pacotes_beneficios, pacote)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!new_campanha.pacotes_beneficios.length">
+                                    <td colspan="2" class="text-center">
+                                        <p>Nenhum pacote de benefícios adicionado.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>
+                                        <select class="form-control form-control-sm" [(ngModel)]="pacote_beneficios_temporario">
+                                            <option [ngValue]="pacote.id" *ngFor="let pacote of pacotes_beneficios">{{ pacote.nome }}</option>
+                                        </select>
+                                    </th>
+                                    <th class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-info" (click)="addPacoteBeneficios(new_campanha.pacotes_beneficios)"><i class="feather icon-save"></i></button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        (click)="retornarAoInicio()">Cancelar</button>
+                    <button type="button" class="btn btn-primary ml-2" (click)="addCampanha()" [disabled]="!new_campanha.nome">Cadastrar</button>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<div class="row" *ngIf="exibir_editar">
+    <div class="col-xl-6 col-md-8 col-sm12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="card-title">EDITAR CAMPANHA</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-8">
+                    <div class="form-group">
+                      <label>Nome</label>
+                      <input type="text" class="form-control form-control-sm" [(ngModel)]="edit_campanha.nome" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4 mt-2">
+                    <div class="form-group">
+                      <label>Data Inicio</label>
+                      <input type="date" class="form-control form-control-sm" [(ngModel)]="edit_campanha.data_inicio" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="col-4 mt-2">
+                    <div class="form-group">
+                      <label>Data Fim</label>
+                      <input type="date" class="form-control form-control-sm" [(ngModel)]="edit_campanha.data_fim" #ctrl="ngModel">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <h5 class="mt-5">Motor de Pontos</h5>
+                    <hr>
+                    <div class="custom-control custom-radio custom-control-inline" *ngFor="let tipo_motor_pontos of tipos_motores_pontos;">
+                      <input type="radio" name="tipo_motor_pontos" id="tipo_motor_pontos_{{ tipo_motor_pontos.id }}" [value]="tipo_motor_pontos.id" [(ngModel)]="edit_campanha.tipo_motor_pontos" class="custom-control-input">
+                      <label class="custom-control-label" for="tipo_motor_pontos_{{ tipo_motor_pontos.id }}">{{ tipo_motor_pontos.nome }}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="edit_campanha.tipo_motor_pontos == 1">
+                <div class="col-12">
+                    <h6 class="mt-5">Pontuação</h6>
+                </div>
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <th>Tipo</th>
+                                <th class="tbl-col-20">Moeda</th>
+                                <th class="tbl-col-30">Pontuação</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Débito</td>
+                                    <td>
+                                        <select class="form-control form-control-sm" [(ngModel)]="edit_campanha.pontuacao_debito.moeda" #ctrl="ngModel">
+                                            <option [value]="moeda.id" *ngFor="let moeda of moedas">{{ moeda.sigla }}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+                                        [(ngModel)]="edit_campanha.pontuacao_debito.pontuacao" #ctrl="ngModel">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Crédito</td>
+                                    <td>
+                                        <select class="form-control form-control-sm" [(ngModel)]="edit_campanha.pontuacao_credito.moeda" #ctrl="ngModel">
+                                            <option [value]="moeda.id" *ngFor="let moeda of moedas">{{ moeda.sigla }}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }"
+                                        [(ngModel)]="edit_campanha.pontuacao_credito.pontuacao" #ctrl="ngModel">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="edit_campanha.tipo_motor_pontos == 2">
+                <div class="col-12">
+                    <h6 class="mt-5">Cashback Débito</h6>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                      <label>Porcentagem</label>
+                      <input currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.porcentagem_cashback_debito" #ctrl="ngModel" required>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <hr>
+                    <h6 class="mt-3">Cashback Crédito</h6>
+                </div>
+                <div class="col-4 mt-2"><p>Cashback por faixa de valor</p></div>
+                <div class="col-8 mt-2">
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_range_cashback_credito" id="possui_range_cashback_credito_0" (change)="mudarTipoCashbackCredito(edit_campanha)"
+                      [value]="false" [(ngModel)]="edit_campanha.possui_range_cashback_credito" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_range_cashback_credito_0">Não</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_range_cashback_credito" id="possui_range_cashback_credito_1" (change)="mudarTipoCashbackCredito(edit_campanha)"
+                      [value]="true" [(ngModel)]="edit_campanha.possui_range_cashback_credito" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_range_cashback_credito_1">Sim</label>
+                    </div>
+                </div>
+                <div class="col-4 mt-2" *ngIf="!edit_campanha.possui_range_cashback_credito">
+                    <div class="form-group">
+                      <label>Porcentagem</label>
+                      <input currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.porcentagem_cashback_credito[0].porcentagem" #ctrl="ngModel" required>
+                    </div>
+                </div>
+                <div class="col-12 mt-2" *ngIf="edit_campanha.possui_range_cashback_credito">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="tbl-col-30">Valor Mínimo</th>
+                                    <th class="tbl-col-30">Valor Máximo</th>
+                                    <th class="tbl-col-30">Porcentagem Cashback</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let range_cashback of edit_campanha.porcentagem_cashback_credito">
+                                    <td class="text-right">{{ range_cashback.valor_minimo | currency:'BRL' }}</td>
+                                    <td class="text-right">{{ range_cashback.valor_maximo | currency:'BRL' }}</td>
+                                    <td class="text-right">{{ range_cashback.porcentagem }}%</td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteRangeCashback(edit_campanha.porcentagem_cashback_credito, range_cashback)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!edit_campanha.porcentagem_cashback_credito.length">
+                                    <td colspan="4" class="text-center">
+                                        <p>Nenhuma faixa de valor adicionada.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th><input class="form-control form-control-sm" currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                                        [(ngModel)]="range_cashback_temporario.valor_minimo" #ctrl="ngModel"></th>
+                                    <th><input class="form-control form-control-sm" currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                                        [(ngModel)]="range_cashback_temporario.valor_maximo" #ctrl="ngModel"></th>
+                                    <th><input type="text" class="form-control form-control-sm" currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }"
+                                         [(ngModel)]="range_cashback_temporario.porcentagem" #ctrl="ngModel"></th>
+                                    <th class="text-right">
+                                        <button class="btn btn-sm btn-icon btn-info" currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }"
+                                        (click)="addRangeCashback(edit_campanha.porcentagem_cashback_credito)"><i class="feather icon-save"></i></button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <h5 class="mt-5">Meta de Spending</h5>
+                    <hr>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_meta_spending" id="possui_meta_spending_0"
+                      [value]="false" [(ngModel)]="edit_campanha.possui_meta_spending" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_meta_spending_0">Não</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_meta_spending" id="possui_meta_spending_1"
+                      [value]="true" [(ngModel)]="edit_campanha.possui_meta_spending" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_meta_spending_1">Sim</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="edit_campanha.possui_meta_spending">
+                <div class="col-4 mt-3">
+                    <div class="form-group">
+                      <label>Valor Meta Spending</label>
+                      <input currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.valor_meta_spendig" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="edit_campanha.possui_meta_spending">
+                <div class="col-4">
+                    <div class="form-group">
+                      <label>Pontuação Meta Spending</label>
+                      <input currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.pontuacao_meta_spending" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <h5 class="mt-5">Bônus de Spending</h5>
+                    <hr>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_bonus_spending" id="possui_bonus_spending_0"
+                      [value]="false" [(ngModel)]="edit_campanha.possui_bonus_spending" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_bonus_spending_0">Não</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="possui_bonus_spending" id="possui_bonus_spending_1"
+                      [value]="true" [(ngModel)]="edit_campanha.possui_bonus_spending" class="custom-control-input">
+                      <label class="custom-control-label" for="possui_bonus_spending_1">Sim</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="edit_campanha.possui_bonus_spending">
+                <div class="col-4">
+                    <div class="form-group">
+                      <label>Valor Bônus Spending</label>
+                      <input currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.valor_bonus_spendig" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="edit_campanha.possui_bonus_spending">
+                <div class="col-4">
+                    <div class="form-group">
+                      <label>Pontuação Bônus Spending</label>
+                      <input currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.pontuacao_bonus_spending" #ctrl="ngModel" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 mt-2">
+                    <hr>
+                    <h5 class="mt-5">Pacotes de Benefícios</h5>
+                    <hr>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th class="tbl-col-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pacote of edit_campanha.pacotes_beneficios">
+                                    <td>{{ consultarNome(pacotes_beneficios, pacote) }}</td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deletePacoteBeneficios(edit_campanha.pacotes_beneficios, pacote)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!edit_campanha.pacotes_beneficios.length">
+                                    <td colspan="2" class="text-center">
+                                        <p>Nenhum pacote de benefícios adicionado.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>
+                                        <select class="form-control form-control-sm" [(ngModel)]="pacote_beneficios_temporario">
+                                            <option [ngValue]="pacote.id" *ngFor="let pacote of pacotes_beneficios">{{ pacote.nome }}</option>
+                                        </select>
+                                    </th>
+                                    <th class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-info" (click)="addPacoteBeneficios(edit_campanha.pacotes_beneficios)"><i class="feather icon-save"></i></button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        (click)="retornarAoInicio()">Cancelar</button>
+                    <button type="button" class="btn btn-primary ml-2" (click)="saveCampanha()" [disabled]="!edit_campanha.nome">Salvar</button>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<app-ui-modal #detalhesCampanha [hideFooter]="true" [dialogClass]="'modal-lg'">
+    <div class="app-modal-header">
+      <h5 class="modal-title">{{ edit_campanha.nome }}</h5>
+      <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="detalhesCampanha.hide()"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="app-modal-body">
+        <div class="row">
+            <div class="col-4 mt-2">
+                <div class="form-group">
+                  <label>Data Inicio</label>
+                  <input type="date" readonly class="form-control form-control-sm" [(ngModel)]="edit_campanha.data_inicio" #ctrl="ngModel">
+                </div>
+            </div>
+            <div class="col-4 mt-2">
+                <div class="form-group">
+                  <label>Data Fim</label>
+                  <input type="date" readonly class="form-control form-control-sm" [(ngModel)]="edit_campanha.data_fim" #ctrl="ngModel">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <hr>
+                <h5 class="mt-5">Motor de Pontos</h5>
+                <hr>
+                <div class="custom-control custom-radio custom-control-inline" *ngFor="let tipo_motor_pontos of tipos_motores_pontos;">
+                  <input type="radio" disabled name="tipo_motor_pontos" id="tipo_motor_pontos_{{ tipo_motor_pontos.id }}"
+                  [value]="tipo_motor_pontos.id" [(ngModel)]="edit_campanha.tipo_motor_pontos" class="custom-control-input">
+                  <label class="custom-control-label" for="tipo_motor_pontos_{{ tipo_motor_pontos.id }}">{{ tipo_motor_pontos.nome }}</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="edit_campanha.tipo_motor_pontos == 1">
+            <div class="col-12">
+                <h6 class="mt-5">Pontuação</h6>
+            </div>
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover">
+                        <thead>
+                            <th>Tipo</th>
+                            <th class="tbl-col-20">Moeda</th>
+                            <th class="tbl-col-30">Pontuação</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Débito</td>
+                                <td>{{ consultarSigla(moedas, edit_campanha.pontuacao_credito.moeda) }}</td>
+                                <td>{{ edit_campanha.pontuacao_debito.pontuacao }}</td>
+                            </tr>
+                            <tr>
+                                <td>Crédito</td>
+                                <td>{{ consultarSigla(moedas, edit_campanha.pontuacao_credito.moeda) }}</td>
+                                <td>{{ edit_campanha.pontuacao_credito.pontuacao }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="edit_campanha.tipo_motor_pontos == 2">
+            <div class="col-12">
+                <h6 class="mt-5">Cashback Débito</h6>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                  <label>Porcentagem</label>
+                  <input readonly currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.porcentagem_cashback_debito" #ctrl="ngModel" required>
+                </div>
+            </div>
+            <div class="col-12">
+                <hr>
+                <h6 class="mt-3">Cashback Crédito</h6>
+            </div>
+            <div class="col-4 mt-2"><p>Cashback por faixa de valor</p></div>
+            <div class="col-8 mt-2">
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" disabled name="possui_range_cashback_credito" id="possui_range_cashback_credito_0" (change)="mudarTipoCashbackCredito(edit_campanha)"
+                  [value]="false" [(ngModel)]="edit_campanha.possui_range_cashback_credito" class="custom-control-input">
+                  <label class="custom-control-label" for="possui_range_cashback_credito_0">Não</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" disabled name="possui_range_cashback_credito" id="possui_range_cashback_credito_1" (change)="mudarTipoCashbackCredito(edit_campanha)"
+                  [value]="true" [(ngModel)]="edit_campanha.possui_range_cashback_credito" class="custom-control-input">
+                  <label class="custom-control-label" for="possui_range_cashback_credito_1">Sim</label>
+                </div>
+            </div>
+            <div class="col-4 mt-2" *ngIf="!edit_campanha.possui_range_cashback_credito">
+                <div class="form-group">
+                  <label>Porcentagem</label>
+                  <input readonly currencyMask [options]="{ prefix: '', suffix: '%', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.porcentagem_cashback_credito[0].porcentagem" #ctrl="ngModel" required>
+                </div>
+            </div>
+            <div class="col-12 mt-2" *ngIf="edit_campanha.possui_range_cashback_credito">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th class="tbl-col-30">Valor Mínimo</th>
+                                <th class="tbl-col-30">Valor Máximo</th>
+                                <th class="tbl-col-30">Porcentagem Cashback</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let range_cashback of edit_campanha.porcentagem_cashback_credito">
+                                <td class="text-right">{{ range_cashback.valor_minimo | currency:'BRL' }}</td>
+                                <td class="text-right">{{ range_cashback.valor_maximo | currency:'BRL' }}</td>
+                                <td class="text-right">{{ range_cashback.porcentagem }}%</td>
+                            </tr>
+                            <tr *ngIf="!edit_campanha.porcentagem_cashback_credito.length">
+                                <td colspan="3" class="text-center">
+                                    <p>Nenhuma faixa de valor adicionada.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <hr>
+                <h5 class="mt-5">Meta de Spending</h5>
+                <hr>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" disabled name="possui_meta_spending" id="possui_meta_spending_0"
+                  [value]="false" [(ngModel)]="edit_campanha.possui_meta_spending" class="custom-control-input">
+                  <label class="custom-control-label" for="possui_meta_spending_0">Não</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" disabled name="possui_meta_spending" id="possui_meta_spending_1"
+                  [value]="true" [(ngModel)]="edit_campanha.possui_meta_spending" class="custom-control-input">
+                  <label class="custom-control-label" for="possui_meta_spending_1">Sim</label>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="edit_campanha.possui_meta_spending">
+            <div class="col-4 mt-3">
+                <div class="form-group">
+                  <label>Valor Meta Spending</label>
+                  <input readonly currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.valor_meta_spendig" #ctrl="ngModel" required>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="edit_campanha.possui_meta_spending">
+            <div class="col-4">
+                <div class="form-group">
+                  <label>Pontuação Meta Spending</label>
+                  <input readonly currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.pontuacao_meta_spending" #ctrl="ngModel" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <hr>
+                <h5 class="mt-5">Bônus de Spending</h5>
+                <hr>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" disabled name="possui_bonus_spending" id="possui_bonus_spending_0"
+                  [value]="false" [(ngModel)]="edit_campanha.possui_bonus_spending" class="custom-control-input">
+                  <label class="custom-control-label" for="possui_bonus_spending_0">Não</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" disabled name="possui_bonus_spending" id="possui_bonus_spending_1"
+                  [value]="true" [(ngModel)]="edit_campanha.possui_bonus_spending" class="custom-control-input">
+                  <label class="custom-control-label" for="possui_bonus_spending_1">Sim</label>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="edit_campanha.possui_bonus_spending">
+            <div class="col-4">
+                <div class="form-group">
+                  <label>Valor Bônus Spending</label>
+                  <input readonly currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.valor_bonus_spendig" #ctrl="ngModel" required>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="edit_campanha.possui_bonus_spending">
+            <div class="col-4">
+                <div class="form-group">
+                  <label>Pontuação Bônus Spending</label>
+                  <input readonly currencyMask [options]="{ prefix: '', thousands: '.', decimal: ',' }" class="form-control form-control-sm" [(ngModel)]="edit_campanha.pontuacao_bonus_spending" #ctrl="ngModel" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mt-2">
+                <hr>
+                <h5 class="mt-5">Pacotes de Benefícios</h5>
+                <hr>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let pacote of edit_campanha.pacotes_beneficios">
+                                <td>{{ consultarNome(pacotes_beneficios, pacote) }}</td>
+                            </tr>
+                            <tr *ngIf="!edit_campanha.pacotes_beneficios.length">
+                                <td class="text-center">
+                                    <p>Nenhum pacote de benefícios adicionado.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <hr>
+
+        <div class="row">
+            <div class="col-12 text-right">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    (click)="detalhesCampanha.hide()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</app-ui-modal>

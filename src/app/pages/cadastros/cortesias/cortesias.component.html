@@ -1,0 +1,389 @@
+<div class="row" *ngIf="!exibir_novo && !exibir_editar">
+    <div class="col-xl-12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-11">
+                    <h5 class="card-title">CORTESIAS</h5>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-primary w-100" (click)="newCortesia()"><i
+                            class="fa fa-plus"></i></button>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="tbl-col-5">#</th>
+                                    <th class="tbl-col-20">Nome</th>
+                                    <th class="tbl-col-10">Site</th>
+                                    <th>Descrição</th>
+                                    <th class="tbl-col-10">Link App Store</th>
+                                    <th class="tbl-col-10">Link Google Play</th>
+                                    <th class="tbl-col-5">Logo</th>
+                                    <th class="tbl-col-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let cortesia of cortesias; let i = index;">
+                                    <td>{{ i+1 }}</td>
+                                    <td>{{ cortesia.nome }}</td>
+                                    <td>{{ cortesia.site }}</td>
+                                    <td>{{ cortesia.descricao }}</td>
+                                    <td>{{ cortesia.link_appstore }}</td>
+                                    <td>{{ cortesia.link_googleplay }}</td>
+                                    <td><img class="image-miniature" src="{{ cortesia.logo }}" *ngIf="cortesia.logo"></td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-info" (click)="editCortesia(cortesia)"><i class="feather icon-edit"></i></button>
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteCortesia(cortesia)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<div class="row" *ngIf="exibir_novo">
+    <div class="col-xl-6 col-md-6 col-sm12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="card-title">NOVA CORTESIA</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                      <label>Nome</label>
+                      <input type="text" class="form-control" [(ngModel)]="new_cortesia.nome" #ctrl="ngModel" required>
+                    </div>
+                </div>
+                <div class="col-6 mt-3">
+                    <div class="form-group">
+                      <label>Logo</label>
+                      <input type="file" (change)="carregarLogo($event, new_cortesia)" class="form-control">
+                    </div>
+                </div>
+                <div class="col-6 mt-3">
+                    <img class="image-preview" src="{{new_cortesia.logo}}" *ngIf="new_cortesia.logo"/>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="form-group">
+                      <label>Site</label>
+                      <input type="text" class="form-control" [(ngModel)]="new_cortesia.site" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="form-group">
+                      <label>Descrição</label>
+                      <input type="text" class="form-control" [(ngModel)]="new_cortesia.descricao" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="form-group">
+                      <label>Link App Store</label>
+                      <input type="text" class="form-control" [(ngModel)]="new_cortesia.link_appstore" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="form-group">
+                      <label>Link Google Play</label>
+                      <input type="text" class="form-control" [(ngModel)]="new_cortesia.link_googleplay" #ctrl="ngModel">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mt-2">
+                    <hr>
+                    <h5 class="mt-5">Capilaridade</h5>
+                    <hr>
+                    <div class="custom-control custom-radio custom-control-inline" *ngFor="let capilaridade of capilaridades">
+                      <input type="radio" name="new_capilaridade" id="new_capilaridade_{{ capilaridade.id }}" (change)="limparCapilaridade(new_cortesia)"
+                      [value]="capilaridade.id" [(ngModel)]="new_cortesia.capilaridade" class="custom-control-input">
+                      <label class="custom-control-label" for="new_capilaridade_{{ capilaridade.id }}">{{ capilaridade.nome }}</label>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-2" *ngIf="new_cortesia.capilaridade === 2">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <th>Estado</th>
+                                <th class="tbl-col-10"></th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let estado of new_cortesia.estados">
+                                    <td>{{ consultarNome(estados, estado) }}</td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteEstado(new_cortesia.estados, estado)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!new_cortesia.estados.length">
+                                    <td colspan="2" class="text-center">
+                                        <p>Nenhum estado adicionado.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>
+                                        <select class="form-control form-control-sm" [(ngModel)]="estado_temporario">
+                                            <option [ngValue]="estado.id" *ngFor="let estado of estados">{{ estado.nome }}</option>
+                                        </select>
+                                    </th>
+                                    <th class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-info" (click)="addEstado(new_cortesia.estados)"><i class="feather icon-save"></i></button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-2" *ngIf="new_cortesia.capilaridade === 3">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover">
+                            <thead>
+                                <th class="tbl-col-30">Estado</th>
+                                <th>Cidade</th>
+                                <th class="tbl-col-10"></th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let cidade of new_cortesia.cidades">
+                                    <td>{{ consultarEstado(cidade) }}</td>
+                                    <td>{{ consultarNome(cidades, cidade) }}</td>
+                                    <td class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteCidade(new_cortesia.cidades, cidade)"><i class="feather icon-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="!new_cortesia.cidades.length">
+                                    <td colspan="3" class="text-center">
+                                        <p>Nenhuma cidade adicionada.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>
+                                        <select class="form-control form-control-sm" [(ngModel)]="estado_temporario">
+                                            <option [ngValue]="estado.id" *ngFor="let estado of estados">{{ estado.nome }}</option>
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <select class="form-control form-control-sm" [(ngModel)]="cidade_temporaria">
+                                            <ng-container *ngFor="let cidade of cidades">
+                                                <option [ngValue]="cidade.id" *ngIf="cidade.estado == estado_temporario">{{ cidade.nome }}</option>
+                                            </ng-container>
+                                        </select>
+                                    </th>
+                                    <th class="text-right">
+                                        <button type="button" class="btn btn-sm btn-icon btn-info" (click)="addCidade(new_cortesia.cidades)"><i class="feather icon-save"></i></button>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-6 mt-3">
+                    <label>Imagens</label>
+                    <input type="file" (change)="carregarImagem($event, new_cortesia)" class="form-control">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3 mt-5" *ngFor="let imagem of new_cortesia.imagens">
+                    <img class="image-preview" src="{{ imagem }}"/>
+                    <br/>
+                    <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteImagem(new_cortesia.imagens, imagem)"><i class="feather icon-trash"></i></button>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        (click)="retornarAoInicio()">Cancelar</button>
+                    <button type="button" class="btn btn-primary ml-2" (click)="addCortesia()" [disabled]="!new_cortesia.nome">Cadastrar</button>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<div class="row" *ngIf="exibir_editar">
+    <div class="col-xl-6 col-md-6 col-sm12">
+        <app-card [hidHeader]="true">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="card-title">EDITAR CORTESIA</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                      <label>Nome</label>
+                      <input type="text" class="form-control" [(ngModel)]="edit_cortesia.nome" #ctrl="ngModel" required>
+                    </div>
+                </div>
+                <div class="col-6 mt-3">
+                    <div class="form-group">
+                      <label>Logo</label>
+                      <input type="file" (change)="carregarLogo($event, edit_cortesia)" class="form-control">
+                    </div>
+                </div>
+                <div class="col-6 mt-3">
+                    <img class="image-preview" src="{{edit_cortesia.logo}}" *ngIf="edit_cortesia.logo"/>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="form-group">
+                      <label>Site</label>
+                      <input type="text" class="form-control" [(ngModel)]="edit_cortesia.site" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="form-group">
+                      <label>Descrição</label>
+                      <input type="text" class="form-control" [(ngModel)]="edit_cortesia.descricao" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="form-group">
+                      <label>Link App Store</label>
+                      <input type="text" class="form-control" [(ngModel)]="edit_cortesia.link_appstore" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="form-group">
+                      <label>Link Google Play</label>
+                      <input type="text" class="form-control" [(ngModel)]="edit_cortesia.link_googleplay" #ctrl="ngModel">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mt-2">
+                        <hr>
+                        <h5 class="mt-5">Capilaridade</h5>
+                        <hr>
+                        <div class="custom-control custom-radio custom-control-inline" *ngFor="let capilaridade of capilaridades">
+                          <input type="radio" name="edit_capilaridade" id="edit_capilaridade_{{ capilaridade.id }}" (change)="limparCapilaridade(edit_cortesia)"
+                          [value]="capilaridade.id" [(ngModel)]="edit_cortesia.capilaridade" class="custom-control-input">
+                          <label class="custom-control-label" for="edit_capilaridade_{{ capilaridade.id }}">{{ capilaridade.nome }}</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-2" *ngIf="edit_cortesia.capilaridade === 2">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-hover">
+                                <thead>
+                                    <th>Estado</th>
+                                    <th class="tbl-col-10"></th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let estado of edit_cortesia.estados">
+                                        <td>{{ consultarNome(estados, estado) }}</td>
+                                        <td class="text-right">
+                                            <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteEstado(edit_cortesia.estados, estado)"><i class="feather icon-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="!edit_cortesia.estados.length">
+                                        <td colspan="2" class="text-center">
+                                            <p>Nenhum estado adicionado.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>
+                                            <select class="form-control form-control-sm" [(ngModel)]="estado_temporario">
+                                                <option [ngValue]="estado.id" *ngFor="let estado of estados">{{ estado.nome }}</option>
+                                            </select>
+                                        </th>
+                                        <th class="text-right">
+                                            <button type="button" class="btn btn-sm btn-icon btn-info" (click)="addEstado(edit_cortesia.estados)"><i class="feather icon-save"></i></button>
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-2" *ngIf="edit_cortesia.capilaridade === 3">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-hover">
+                                <thead>
+                                    <th class="tbl-col-30">Estado</th>
+                                    <th>Cidade</th>
+                                    <th class="tbl-col-10"></th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let cidade of edit_cortesia.cidades">
+                                        <td>{{ consultarEstado(cidade) }}</td>
+                                        <td>{{ consultarNome(cidades, cidade) }}</td>
+                                        <td class="text-right">
+                                            <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteCidade(edit_cortesia.cidades, cidade)"><i class="feather icon-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="!edit_cortesia.cidades.length">
+                                        <td colspan="3" class="text-center">
+                                            <p>Nenhuma cidade adicionada.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>
+                                            <select class="form-control form-control-sm" [(ngModel)]="estado_temporario">
+                                                <option [ngValue]="estado.id" *ngFor="let estado of estados">{{ estado.nome }}</option>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <select class="form-control form-control-sm" [(ngModel)]="cidade_temporaria">
+                                                <ng-container *ngFor="let cidade of cidades">
+                                                    <option [ngValue]="cidade.id" *ngIf="cidade.estado == estado_temporario">{{ cidade.nome }}</option>
+                                                </ng-container>
+                                            </select>
+                                        </th>
+                                        <th class="text-right">
+                                            <button type="button" class="btn btn-sm btn-icon btn-info" (click)="addCidade(edit_cortesia.cidades)"><i class="feather icon-save"></i></button>
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-6 mt-3">
+                    <label>Imagens</label>
+                    <input type="file" (change)="carregarImagem($event, edit_cortesia)" class="form-control">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3 mt-5" *ngFor="let imagem of edit_cortesia.imagens">
+                    <img class="image-preview" src="{{ imagem }}"/>
+                    <br/>
+                    <button type="button" class="btn btn-sm btn-icon btn-danger" (click)="deleteImagem(edit_cortesia.imagens, imagem)"><i class="feather icon-trash"></i></button>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        (click)="retornarAoInicio()">Cancelar</button>
+                    <button type="button" class="btn btn-primary ml-2" (click)="saveCortesia()" [disabled]="!edit_cortesia.nome">Salvar</button>
+                </div>
+            </div>
+        </app-card>
+    </div>
+</div>
